@@ -1,10 +1,17 @@
 import express from 'express';
+import path from 'path';
 
 const app = express();
-const port = 3000;
-app.get('/', (req, res) => {
-    res.send('The sedulous hyena ate the antelope!');
+const PORT = process.env.PORT || 5000;
+
+
+app.use('/static', express.static(path.resolve(__dirname, '../../static/static')));
+
+app.get('*', (req, res) => {
+    const pathFile = path.resolve(__dirname, '../../static/index.html');
+    res.sendFile(pathFile)
 });
-app.listen(port, () => {
-     console.log(`server is listening on ${port}`);
+
+app.listen(PORT, () => {
+     console.log(`server is listening on ${PORT}`);
 });
