@@ -9,7 +9,8 @@
     "server:build": "cd ./server && npm install && npm run server:build",
     "server:start": "cd ./server && npm run server:start",
     "client:start": "cd ./client && npm start",
-    "client:build": "cd ./client && npm install && npm run build"
+    "client:build": "cd ./client && npm install && npm run build",
+    "start:dev": "npm run server:start & npm run client:start"
   },
   "engines": {
     "node": "12.x"
@@ -24,6 +25,8 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1"
   }
 }

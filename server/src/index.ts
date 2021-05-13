@@ -1,9 +1,12 @@
 import express from 'express';
 import path from 'path';
-
+import {recordRouter} from './routes/records.route'
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+// API ROUTES
+app.use('/api/records', recordRouter);
 
 app.use('/static', express.static(path.resolve(__dirname, '../static/static')));
 

@@ -2,6 +2,16 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
     createStyles({
+        container: {
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column'
+        },
+        content: {
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+        },
         appBar: {
             height: 80,
             padding: theme.spacing(2, 0)

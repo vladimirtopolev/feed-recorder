@@ -7,7 +7,7 @@ import {NavLink} from 'react-router-dom';
 export const DefaultLayout: FC = ({children})=> {
     const classes = useStyles();
     return (
-        <>
+        <Box className={classes.container}>
             <AppBar className={classes.appBar} position="static">
                 <Container className={classes.header}>
                     <AllInclusive className={classes.logo}/>
@@ -30,9 +30,9 @@ export const DefaultLayout: FC = ({children})=> {
                     </Toolbar>
                 </Container>
             </AppBar>
-            <Box component="main">
+            <Box component="main" className={classes.content}>
                 {children}
             </Box>
-        </>
+        </Box>
     )
 }
