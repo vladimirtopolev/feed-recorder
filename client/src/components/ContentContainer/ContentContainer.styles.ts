@@ -12,7 +12,8 @@ export const useStyles = makeStyles((theme) =>
         },
         content: {
             flexGrow: 1,
-            position: 'relative'
+            position: 'relative',
+            padding: theme.spacing(4, 0),
         },
         loaderContainer: {
             position: 'absolute',

@@ -1,6 +1,7 @@
 import {FC} from 'react';
 import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@material-ui/core';
 import {Record} from '../../../../../api/record';
+import {useStyles} from './RecordsTable.styles';
 
 import {Edit as EditIcon, Delete as DeleteIcon} from '@material-ui/icons';
 
@@ -9,15 +10,17 @@ type RecordsTableProps = {
 }
 
 export const RecordsTable: FC<RecordsTableProps> = ({items}) =>{
+    const classes = useStyles();
+
     return (
-        <TableContainer>
+        <TableContainer className={classes.container}>
             <Table>
-                <TableHead>
+                <TableHead className={classes.tableHead}>
                     <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Rercord State</TableCell>
-                        <TableCell>Simulation State</TableCell>
-                        <TableCell>Actions</TableCell>
+                        <TableCell className={classes.tableHeadCell}>Name</TableCell>
+                        <TableCell className={classes.tableHeadCell}>Rercord State</TableCell>
+                        <TableCell className={classes.tableHeadCell}>Simulation State</TableCell>
+                        <TableCell className={classes.tableHeadCell}>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -26,9 +29,9 @@ export const RecordsTable: FC<RecordsTableProps> = ({items}) =>{
                             <TableCell>{item.name}</TableCell>
                             <TableCell>{item.recordState}</TableCell>
                             <TableCell>{item.simulationState}</TableCell>
-                            <TableCell>
-                                <Button><EditIcon/></Button>
-                                <Button><DeleteIcon/></Button>
+                            <TableCell className={classes.tableBodyCellActions}>
+                                <Button color="primary"><EditIcon/></Button>
+                                <Button color="secondary"><DeleteIcon/></Button>
                             </TableCell>
                         </TableRow>
                     ))}

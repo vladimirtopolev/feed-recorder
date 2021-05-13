@@ -3,6 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) =>
     createStyles({
         wrapper: {
+            background: '#ffffff',
             padding: theme.spacing(2, 0),
             boxShadow: '0 1px 3px 0 rgba(63, 63, 68, 0.15), 0 0 4px 0 rgba(63, 63, 68, 0.05);',
         },

@@ -6,7 +6,7 @@ export const getBaseUrl = ():any =>{
     return process.env.NODE_ENV === 'development' ? 'http://localhost:5000': undefined;
 }
 
-export const delay = (data: any, delay = 5000) => {
+export const delay = (data: any, delay = 1000) => {
     return new Promise<any>((resolve) => {
        setTimeout(()=>{
            resolve(data);

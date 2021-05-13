@@ -11,6 +11,7 @@ export const useStyles = makeStyles((theme) =>
             flexGrow: 1,
             display: 'flex',
             flexDirection: 'column',
+            background: '#f5f5f5'
         },
         appBar: {
             height: 80,
