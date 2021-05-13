@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "sourceRoot": ".",
-    "outDir": "../build",
+    "outDir": "./build",
     "target": "ES2019",
     "resolveJsonModule": true,
     "strictNullChecks": true,
