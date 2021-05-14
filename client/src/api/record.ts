@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosPromise} from 'axios';
 import {delay, getBaseUrl} from './index';
+import {PaginationOptions, PaginationResponse} from '../types';
 
 export enum RECORD_STATE  {
     IN_PROGRESS= 'IN_PROGRESS',
@@ -29,8 +30,9 @@ export type Record = {
     id: string,
     name: string,
     recordState: RECORD_STATE,
-    recordStep: number,
+    recordSteps: number,
     simulationState: SIMULATION_STATE,
+    simulationStep: number,
     created: Date,
     feedsMeta: FeedMeta[],
     timestampLabels: TimestampLabel[],
@@ -45,8 +47,8 @@ export class RecordApi {
     }
     private domainArea = 'records';
 
-    public getItems = ():  AxiosPromise<Record[]> => {
-        return this.axios.get(`/api/${this.domainArea}`)
+    public getItems = (options: PaginationOptions = {limit: 10, offset:0}):  AxiosPromise<PaginationResponse<Record>> => {
+        return this.axios.get(`/api/${this.domainArea}`, {params: options})
             .then(data => delay(data))
     }
 

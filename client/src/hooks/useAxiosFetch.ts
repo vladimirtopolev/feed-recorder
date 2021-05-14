@@ -20,7 +20,10 @@ type UseFetchProps<T> = {
 
 export type MakeRequestFn<T> = () => AxiosPromise<T>;
 
-export const useAxiosFetch = <T> ({makeRequestOnComponentMount, makeRequestFn}: UseFetchProps<T>): UseFetch<T> => {
+export const useAxiosFetch = <T> (options?: UseFetchProps<T>): UseFetch<T> => {
+    const makeRequestOnComponentMount = options?.makeRequestOnComponentMount;
+    const makeRequestFn = options?.makeRequestFn;
+
     const [responseState, setResponseState] = useState<ResponseState<T>>({
         isLoading: false,
         error: null,

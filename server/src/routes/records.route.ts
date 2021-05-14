@@ -10,14 +10,18 @@ export const recordRouter = express.Router();
 const INIT_RECORD: Partial<Record> = {
     recordState: RECORD_STATE.NOT_STARTED,
     simulationState: SIMULATION_STATE.NOT_STARTED,
-    recordStep: 0,
+    simulationStep: 0,
+    recordSteps: 0,
     feedsMeta: [],
     labels: [],
     timestampLabels: []
 };
 
 recordRouter.get('/', (req: PaginationRequest, res) => {
-    res.send(getPageFrame(entities.RECORDS, req.query));
+    res.send({
+        items: getPageFrame(entities.RECORDS, req.query),
+        count: entities.RECORDS.length
+    });
 });
 
 recordRouter.post('/', (req, res) => {

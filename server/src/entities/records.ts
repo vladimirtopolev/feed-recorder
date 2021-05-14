@@ -33,8 +33,9 @@ export type Record = {
     id: string,
     name: string,
     recordState: RECORD_STATE,
-    recordStep: number,
+    recordSteps: number,
     simulationState: SIMULATION_STATE,
+    simulationStep: number,
     created: Date,
     feedsMeta: FeedMeta[],
     timestampLabels: TimestampLabel[],
@@ -44,10 +45,11 @@ export type Record = {
 export const RECORDS:Record[] = Array.from({ length: RECORDS_COUNT })
     .map((_, i): Record=>({
        id: faker.datatype.uuid(),
-        name: faker.name.title(),
+        name: `${i+1} ${faker.name.title()}`,
         recordState: RECORD_STATE.NOT_STARTED,
-        recordStep: faker.datatype.number({min: 100, max: 200}),
+        recordSteps: faker.datatype.number({min: 100, max: 200}),
         simulationState: SIMULATION_STATE.NOT_STARTED,
+        simulationStep: 0,
         created: new Date(),
         feedsMeta: Array.from({ length: FEEDS_COUNT })
             .map((_, i):FeedMeta => ({
