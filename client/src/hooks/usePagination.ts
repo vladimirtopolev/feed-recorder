@@ -18,7 +18,8 @@ export type UsePaginationReturn<T> = PaginationState & {
     changeItemsPerPage: (limit: number) => void;
     isLoading: boolean,
     error: any,
-    items: T[]
+    items: T[],
+    refreshPage: () => void
 }
 
 
@@ -67,7 +68,11 @@ export const usePagination = <T>(getItems: (options: PaginationOptions) => Axios
         }));
     };
 
-    useEffect(() => {
+    const refreshPage = () =>{
+        getRecordsPage();
+    }
+
+    const getRecordsPage = () => {
         handleRequest(() => getItems({limit, offset}))
             .then(data => {
                 setPaginationState((prev) => {
@@ -79,6 +84,10 @@ export const usePagination = <T>(getItems: (options: PaginationOptions) => Axios
                     };
                 });
             });
+    }
+
+    useEffect(() => {
+        getRecordsPage();
     }, [limit, offset]);
 
     return {
@@ -89,6 +98,7 @@ export const usePagination = <T>(getItems: (options: PaginationOptions) => Axios
         changePage,
         isLoading,
         error,
-        items: response?.items || []
+        items: response?.items || [],
+        refreshPage
     };
 };

@@ -16,11 +16,14 @@ import {Edit as EditIcon, Delete as DeleteIcon} from '@material-ui/icons';
 import {RecordStateCell} from './components/RecordStateCell/RecordStateCell';
 import {SimulationStateCell} from './components/SimulationStateCell/SimulationStateCell';
 import {UsePaginationReturn} from '../../../../../hooks/usePagination';
+import {NavLink} from 'react-router-dom';
+import {useDeleteRecordModal} from '../../hooks/useDeleteRecordModal';
 
 type RecordsTableProps = UsePaginationReturn<Record>
 
-export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, changeItemsPerPage, offset, changePage}) => {
+export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, changeItemsPerPage, offset, changePage, refreshPage}) => {
     const classes = useStyles();
+    const {DeleteRecordModal, deleteRecordModalProps, deleteRecord} = useDeleteRecordModal(refreshPage);
 
     return (
         <>
@@ -45,8 +48,18 @@ export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, c
                                     <SimulationStateCell state={item.simulationState} step={item.simulationStep}/>
                                 </TableCell>
                                 <TableCell className={classes.tableBodyCellActions}>
-                                    <Button color="primary" value={item.id}><EditIcon/></Button>
-                                    <Button color="secondary" value={item.id}><DeleteIcon/></Button>
+                                    <Button
+                                        color="primary" component={NavLink}
+                                        to={`/records/${item.id}`}
+                                    >
+                                        <EditIcon/>
+                                    </Button>
+                                    <Button
+                                        color="secondary"
+                                        onClick={() => deleteRecord(item)}
+                                    >
+                                        <DeleteIcon/>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -57,14 +70,15 @@ export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, c
                 rowsPerPageOptions={[5, 10, 25]}
                 count={itemsCount}
                 rowsPerPage={limit}
-                page={Math.floor(offset /limit)}
-                onChangePage={(_, page)=>{
+                page={Math.floor(offset / limit)}
+                onChangePage={(_, page) => {
                     changePage(page);
                 }}
-                onChangeRowsPerPage={(ev)=>{
-                    changeItemsPerPage(+ev.target.value)
+                onChangeRowsPerPage={(ev) => {
+                    changeItemsPerPage(+ev.target.value);
                 }}
             />
+            <DeleteRecordModal {...deleteRecordModalProps}/>
         </>
     );
 };
