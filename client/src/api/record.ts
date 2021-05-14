@@ -48,8 +48,7 @@ export class RecordApi {
     private domainArea = 'records';
 
     public getItems = (options: PaginationOptions = {limit: 10, offset:0}):  AxiosPromise<PaginationResponse<Record>> => {
-        return this.axios.get(`/api/${this.domainArea}`, {params: options})
-            .then(data => delay(data))
+        return this.axios.get(`/api/${this.domainArea}`, {params: options});
     }
 
     public getItem = (itemId: string): AxiosPromise<Record> =>{
