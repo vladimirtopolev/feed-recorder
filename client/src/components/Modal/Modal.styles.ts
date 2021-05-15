@@ -1,4 +1,4 @@
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import {createStyles, makeStyles} from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
     createStyles({
@@ -20,8 +20,7 @@ export const useStyles = makeStyles((theme) =>
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-
-
+            background: 'rgba(255,255, 255, 0.5)'
         }
     })
 );

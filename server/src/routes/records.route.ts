@@ -69,6 +69,7 @@ recordRouter.post('/:recordId/feedsMeta', (req: Request<{ recordId: string }, an
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
     const newFeedMeta = {...feedMeta, id: faker.datatype.uuid()};
+    console.log(newFeedMeta, feedMeta);
     targetRecord.feedsMeta.push(newFeedMeta);
     res.send(newFeedMeta);
 });
