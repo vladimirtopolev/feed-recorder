@@ -27,6 +27,10 @@ export const useStyles = makeStyles((theme) =>
         },
         description: {
             textAlign: 'center'
+        },
+        progress: {
+            width: '100%',
+            margin: theme.spacing(1, 0)
         }
     })
 );
