@@ -2,8 +2,8 @@ import express, {Request} from 'express';
 import entities from '../entities';
 import {Record, FeedMeta, RECORD_STATE, SIMULATION_STATE} from '../entities/records';
 import {PaginationRequest} from '../types';
-import {getPageFrame} from '../utils';
 import faker from 'faker';
+import {RecordModel} from '../models/record.model';
 
 export const recordRouter = express.Router();
 
@@ -17,10 +17,15 @@ const INIT_RECORD: Partial<Record> = {
     timestampLabels: []
 };
 
-recordRouter.get('/', (req: PaginationRequest, res) => {
+recordRouter.get('/', async (req: PaginationRequest, res) => {
+    const {offset, limit} = req.query;
+    const [count, items] = await Promise.all([
+        RecordModel.countDocuments(),
+        RecordModel.find({}).skip(Number(offset)).limit(Number(limit))
+    ]);
     res.send({
-        items: getPageFrame(entities.RECORDS, req.query),
-        count: entities.RECORDS.length
+        items: items,
+        count: count
     });
 });
 
@@ -35,116 +40,123 @@ recordRouter.post('/', (req, res) => {
     res.json(newItem);
 });
 
-recordRouter.get('/:recordId', (req: Request<{ recordId: string }>, res) => {
+recordRouter.get('/:recordId', async (req: Request<{ recordId: string }>, res) => {
     const {recordId} = req.params;
-    let item = entities.RECORDS.find(record => record.id === recordId);
-    res.send(item);
+    const record = await RecordModel.findById(recordId);
+    if (!record) {
+        return res.status(404).json({message: `Couldn't find record ${recordId}`});
+    }
+    res.send(record);
 });
 
-recordRouter.delete('/:recordId', (req: Request<{ recordId: string }>, res) => {
+recordRouter.delete('/:recordId', async (req: Request<{ recordId: string }>, res) => {
     const {recordId} = req.params;
-    const deletedItem = entities.RECORDS.find(r => r.id === recordId);
-    if (!deletedItem) {
+    const deletedRecord = await RecordModel.findByIdAndDelete(recordId);
+    if (!deletedRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
-    entities.RECORDS = entities.RECORDS.filter(r => r.id !== recordId);
-    res.json(deletedItem);
+    res.json(deletedRecord);
 });
 
 
 // FEEDS META ROUTES
-recordRouter.get('/:recordId/feedsMeta', (req: Request<{ recordId: string }>, res) => {
+recordRouter.get('/:recordId/feedsMeta', async (req: Request<{ recordId: string }>, res) => {
     const {recordId} = req.params;
-    const record = entities.RECORDS.find(rec => rec.id === recordId);
+    const record = await RecordModel.findById(recordId);
     if (!record) {
         return res.sendStatus(404).json({message: `Record with id ${recordId} not found`});
     }
     res.send(record.feedsMeta);
 });
 
-recordRouter.post('/:recordId/feedsMeta', (req: Request<{ recordId: string }, any, FeedMeta>, res) => {
+recordRouter.post('/:recordId/feedsMeta', async (req: Request<{ recordId: string }, any, FeedMeta>, res) => {
     const {recordId} = req.params;
     const feedMeta = req.body;
-    const targetRecord = entities.RECORDS.find(rec => rec.id === recordId);
 
-    if (!targetRecord) {
+    const newRecord = await RecordModel.findByIdAndUpdate(recordId, {$push: {feedsMeta: feedMeta}}, {new: true});
+    if (!newRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
-    const newFeedMeta = {...feedMeta, id: faker.datatype.uuid()};
-    console.log(newFeedMeta, feedMeta);
-    targetRecord.feedsMeta.push(newFeedMeta);
-    res.send(newFeedMeta);
+    res.send(newRecord.feedsMeta.splice(-1)[0]);
 });
 
-recordRouter.put('/:recordId/feedsMeta/:feedMetaId', (req: Request<{ recordId: string, feedMetaId: string }, any, FeedMeta>, res) => {
-    const {recordId, feedMetaId} = req.params;
-    const editedMeta = req.body;
-    const targetRecord = entities.RECORDS.find(rec => rec.id === recordId);
+const getFeedMetaById = async (recordId: string, feedMetaId: string) => {
+    const feedMetaDocument = await RecordModel.findOne(
+        {_id: recordId, 'feedsMeta._id': feedMetaId},
+        {'feedsMeta.$': 1}
+    );
+    return feedMetaDocument?.feedsMeta[0] || null;
+};
 
-    if (!targetRecord) {
+recordRouter.put('/:recordId/feedsMeta/:feedMetaId', async (req: Request<{ recordId: string, feedMetaId: string }, any, FeedMeta>, res) => {
+    const {recordId, feedMetaId} = req.params;
+
+    const modifier = (['feedUrl', 'fileName'] as (keyof FeedMeta)[])
+        .reduce((result, key) => ({...result, [`feedsMeta.$.${key}`]: req.body[key]}), {});
+    const newRecord = await RecordModel.updateOne(
+        {_id: recordId, 'feedsMeta._id': feedMetaId},
+        {$set: modifier}
+    );
+    if (!newRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
-    targetRecord.feedsMeta = targetRecord.feedsMeta.map(meta => meta.id === feedMetaId ? editedMeta : meta);
-    res.send({...editedMeta, id: feedMetaId});
+    const feedMeta = await getFeedMetaById(recordId, feedMetaId);
+    res.send(feedMeta);
 });
 
-recordRouter.delete('/:recordId/feedsMeta/:feedMetaId', (req: Request<{ recordId: string, feedMetaId: string }>, res) => {
+recordRouter.delete('/:recordId/feedsMeta/:feedMetaId', async (req: Request<{ recordId: string, feedMetaId: string }>, res) => {
     const {recordId, feedMetaId} = req.params;
-    const targetRecord = entities.RECORDS.find(rec => rec.id === recordId);
+    const newRecord = await RecordModel.findByIdAndUpdate(recordId, {$pull: {feedsMeta: {_id: feedMetaId}}});
 
-    if (!targetRecord) {
+    if (!newRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
 
-    const deletedFeedMeta = targetRecord.feedsMeta.find(meta => meta.id === feedMetaId);
-    if (!deletedFeedMeta) {
-        return res.sendStatus(404).json({message: `Feed meta with id ${feedMetaId} not found in record with id ${recordId}`});
-    }
-
-    targetRecord.feedsMeta = targetRecord.feedsMeta
-        .filter(meta => meta.id !== feedMetaId);
-    res.send(deletedFeedMeta);
+    res.send({_id: feedMetaId, id: feedMetaId});
 });
 
 // TIMESTAMP LABELS ROUTES
-recordRouter.post('/:recordId/timestampLabels', (req, res) => {
+recordRouter.post('/:recordId/timestampLabels', async (req, res) => {
     const recordId = req.params.recordId;
     const newLabel = req.body;
-    const targetRecord = entities.RECORDS.find(r => r.id === recordId);
+
+    const targetRecord = await RecordModel.findByIdAndUpdate(recordId, {$push: {timestampLabels: newLabel}}, {new: true});
     if (!targetRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
-    targetRecord.timestampLabels.push(newLabel);
-    res.send(newLabel);
+    res.send(targetRecord.timestampLabels.splice(-1)[0]);
 });
 
-recordRouter.put('/:recordId/timestampLabels/:stepId', (req, res) => {
-    const recordId = req.params.recordId;
-    const stepId = +req.params.stepId;
-    const modifiedLabel = req.body;
-    const targetRecord = entities.RECORDS.find(r => r.id === recordId);
-    if (!targetRecord) {
+const getTimestampLabelByStep = async (recordId: string, step: number) => {
+    const feedMetaDocument = await RecordModel.findOne(
+        {_id: recordId, 'timestampLabels.step': step},
+        {'timestampLabels.$': 1}
+    );
+    return feedMetaDocument?.timestampLabels[0] || null;
+};
+
+recordRouter.put('/:recordId/timestampLabels/:stepId', async (req, res) => {
+    const {recordId, stepId} = req.params;
+    const step = Number(stepId);
+    const newRecord = await RecordModel.updateOne(
+        {_id: recordId, 'timestampLabels.step': step},
+        {$set: {'timestampLabels.$.label': req.body.label}}
+    );
+    console.log(newRecord)
+    if (!newRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
-    const modifyLabel = targetRecord.timestampLabels.find(label => label.step === stepId);
-    if (!modifyLabel){
-        return res.sendStatus(404).json({message: `Label with step ${stepId} not found in record with id ${recordId}`});
-    }
-    targetRecord.timestampLabels = targetRecord.timestampLabels.map(label => label.step === stepId ? modifiedLabel : label);
-    res.send(modifiedLabel);
+    const timestampLabel = await getTimestampLabelByStep(recordId, step);
+    res.send(timestampLabel);
 });
 
-recordRouter.delete('/:recordId/timestampLabels/:stepId', (req, res) => {
-    const recordId = req.params.recordId;
-    const stepId = +req.params.stepId;
-    const targetRecord = entities.RECORDS.find(r => r.id === recordId);
-    if (!targetRecord) {
+recordRouter.delete('/:recordId/timestampLabels/:stepId', async (req, res) => {
+    const {recordId, stepId} = req.params;
+    const step = Number(stepId)
+    const newRecord = await RecordModel.findByIdAndUpdate(recordId, {$pull: {timestampLabels: {step}}});
+    if (!newRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
-    const deletedTimestampRecord = targetRecord.timestampLabels.find(label => label.step === stepId);
-    if (!deletedTimestampRecord) {
-        return res.sendStatus(404).json({message: `Label with step ${stepId} not found in record with id ${recordId}`});
-    }
-    targetRecord.timestampLabels = targetRecord.timestampLabels.filter(label => label.step !== stepId);
-    res.send(deletedTimestampRecord);
+
+    res.send({step});
 });

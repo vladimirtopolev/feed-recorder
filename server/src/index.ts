@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import mongoConnection from './connections/mongo-connection.provider';
 
 import {recordRouter} from './routes/records.route';
 const app = express();
@@ -21,6 +22,9 @@ app.get('*', (req, res) => {
     res.sendFile(pathFile)
 });
 
-app.listen(PORT, () => {
-     console.log(`server is listening on ${PORT}`);
-});
+mongoConnection.connect()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`server is listening on ${PORT}`);
+        });
+    })

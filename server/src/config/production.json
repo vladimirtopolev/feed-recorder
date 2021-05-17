@@ -1,0 +1,8 @@
+{
+    "CONNECTIONS": {
+      "MONGODB": {
+        "URL": "mongodb+srv://development:BrainLeo1986@cluster0.lvfic.mongodb.net",
+        "DB_NAME": "admin-db"
+      }
+    }
+}

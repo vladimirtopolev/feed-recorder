@@ -1,0 +1,8 @@
+{
+    "CONNECTIONS": {
+        "MONGODB": {
+            "URL": "in-memory",
+            "DB_NAME": "bt-admin"
+        }
+    }
+}
