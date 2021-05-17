@@ -35,9 +35,9 @@ export const FeedsMeta: FC<FeedsMetaProps> = ({recordId}) => {
         getFeedMeta();
     }, []);
 
-    const {CreateEditModal, createEditModalProps, editItem, createItem} =
+    const {CreateEditItemModal, createEditModalProps, editItem, createItem} =
         useCreateEditFeedMetaModal(recordId, getFeedMeta);
-    const {DeleteModal, deleteModalProps, deleteItem} = useDeleteFeedMetaModal(recordId, getFeedMeta);
+    const {DeleteItemModal, deleteItemModalProps, deleteItem} = useDeleteFeedMetaModal(recordId, getFeedMeta);
 
     return (
         <Box className={classes.wrapper}>
@@ -88,8 +88,8 @@ export const FeedsMeta: FC<FeedsMetaProps> = ({recordId}) => {
                         <CircularProgress/>
                     </Box>)}
             </TableContainer>
-            <CreateEditModal {...createEditModalProps}/>
-            <DeleteModal {...deleteModalProps}/>
+            <CreateEditItemModal {...createEditModalProps}/>
+            <DeleteItemModal {...deleteItemModalProps}/>
         </Box>
     );
 };

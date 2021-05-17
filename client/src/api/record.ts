@@ -48,6 +48,7 @@ export class RecordApi {
 
     private domainArea = 'records';
     private feedsRecordDomainArea = 'feedsMeta';
+    private timestampDomainArea = 'timestampLabels';
 
     public getItems = (options: PaginationOptions = {
         limit: 10,
@@ -74,9 +75,9 @@ export class RecordApi {
 
 
     // FEED META ROUTES
-    public getFeedRecordItems = (recordId: string): AxiosPromise<FeedMeta[]> =>{
+    public getFeedRecordItems = (recordId: string): AxiosPromise<FeedMeta[]> => {
         return this.axios.get(`/api/${this.domainArea}/${recordId}/${this.feedsRecordDomainArea}`);
-    }
+    };
 
     public createFeedRecordItem = (recordId: string, item: Partial<FeedMeta>): AxiosPromise<FeedMeta> => {
         return this.axios.post(`/api/${this.domainArea}/${recordId}/${this.feedsRecordDomainArea}`, item);
@@ -89,4 +90,18 @@ export class RecordApi {
     public deleteFeedRecordItem = (recordId: string, feedMetaId: string): AxiosPromise<FeedMeta> => {
         return this.axios.delete(`/api/${this.domainArea}/${recordId}/${this.feedsRecordDomainArea}/${feedMetaId}`);
     };
+
+    // TIMESTAMPS LABELS ROUTES
+    public createTimestampLabel = (recordId: string, item: Partial<TimestampLabel>): AxiosPromise<TimestampLabel> => {
+        return this.axios.post(`/api/${this.domainArea}/${recordId}/${this.timestampDomainArea}`, item);
+    };
+
+    public editTimestampLabel = (recordId: string, stepId: number, item: Partial<TimestampLabel>): AxiosPromise<TimestampLabel> => {
+        return this.axios.put(`/api/${this.domainArea}/${recordId}/${this.timestampDomainArea}/${stepId}`, item);
+
+    }
+
+    public deleteTimestampLabel = (recordId: string, stepId: number): AxiosPromise<TimestampLabel> => {
+        return this.axios.delete(`/api/${this.domainArea}/${recordId}/${this.timestampDomainArea}/${stepId}`);
+    }
 }

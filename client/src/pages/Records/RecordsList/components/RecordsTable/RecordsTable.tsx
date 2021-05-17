@@ -23,7 +23,7 @@ type RecordsTableProps = UsePaginationReturn<Record>
 
 export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, changeItemsPerPage, offset, changePage, refreshPage}) => {
     const classes = useStyles();
-    const {DeleteRecordModal, deleteRecordModalProps, deleteRecord} = useDeleteRecordModal(refreshPage);
+    const {DeleteItemModal, deleteItemModalProps, deleteItem} = useDeleteRecordModal(refreshPage);
 
     return (
         <>
@@ -56,7 +56,7 @@ export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, c
                                     </Button>
                                     <Button
                                         color="secondary"
-                                        onClick={() => deleteRecord(item)}
+                                        onClick={() => deleteItem(item)}
                                     >
                                         <DeleteIcon/>
                                     </Button>
@@ -78,7 +78,7 @@ export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, c
                     changeItemsPerPage(+ev.target.value);
                 }}
             />
-            <DeleteRecordModal {...deleteRecordModalProps}/>
+            <DeleteItemModal {...deleteItemModalProps}/>
         </>
     );
 };
