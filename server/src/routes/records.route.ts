@@ -51,6 +51,8 @@ recordRouter.delete('/:recordId', (req: Request<{ recordId: string }>, res) => {
     res.json(deletedItem);
 });
 
+
+// FEEDS META ROUTES
 recordRouter.get('/:recordId/feedsMeta', (req: Request<{ recordId: string }>, res) => {
     const {recordId} = req.params;
     const record = entities.RECORDS.find(rec => rec.id === recordId);
@@ -86,7 +88,7 @@ recordRouter.put('/:recordId/feedsMeta/:feedMetaId', (req: Request<{ recordId: s
     res.send({...editedMeta, id: feedMetaId});
 });
 
-recordRouter.delete('/:recordId/feedsMeta/:feedMetaId', (req:Request<{ recordId: string, feedMetaId: string }>, res) => {
+recordRouter.delete('/:recordId/feedsMeta/:feedMetaId', (req: Request<{ recordId: string, feedMetaId: string }>, res) => {
     const {recordId, feedMetaId} = req.params;
     const targetRecord = entities.RECORDS.find(rec => rec.id === recordId);
 
@@ -95,11 +97,54 @@ recordRouter.delete('/:recordId/feedsMeta/:feedMetaId', (req:Request<{ recordId:
     }
 
     const deletedFeedMeta = targetRecord.feedsMeta.find(meta => meta.id === feedMetaId);
-    if (!deletedFeedMeta){
+    if (!deletedFeedMeta) {
         return res.sendStatus(404).json({message: `Feed meta with id ${feedMetaId} not found in record with id ${recordId}`});
     }
 
     targetRecord.feedsMeta = targetRecord.feedsMeta
-        .filter(meta => meta.id !== feedMetaId)
+        .filter(meta => meta.id !== feedMetaId);
     res.send(deletedFeedMeta);
+});
+
+// TIMESTAMP LABELS ROUTES
+recordRouter.post('/:recordId/timestampLabels', (req, res) => {
+    const recordId = req.params.recordId;
+    const newLabel = req.body;
+    const targetRecord = entities.RECORDS.find(r => r.id === recordId);
+    if (!targetRecord) {
+        return res.status(404).json({message: `Record with id ${recordId} not found`});
+    }
+    targetRecord.timestampLabels.push(newLabel);
+    res.send(newLabel);
+});
+
+recordRouter.put('/:recordId/timestampLabels/:stepId', (req, res) => {
+    const recordId = req.params.recordId;
+    const stepId = +req.params.stepId;
+    const modifiedLabel = req.body;
+    const targetRecord = entities.RECORDS.find(r => r.id === recordId);
+    if (!targetRecord) {
+        return res.status(404).json({message: `Record with id ${recordId} not found`});
+    }
+    const modifyLabel = targetRecord.timestampLabels.find(label => label.step === stepId);
+    if (!modifyLabel){
+        return res.sendStatus(404).json({message: `Label with step ${stepId} not found in record with id ${recordId}`});
+    }
+    targetRecord.timestampLabels = targetRecord.timestampLabels.map(label => label.step === stepId ? modifiedLabel : label);
+    res.send(modifiedLabel);
+});
+
+recordRouter.delete('/:recordId/timestampLabels/:stepId', (req, res) => {
+    const recordId = req.params.recordId;
+    const stepId = +req.params.stepId;
+    const targetRecord = entities.RECORDS.find(r => r.id === recordId);
+    if (!targetRecord) {
+        return res.status(404).json({message: `Record with id ${recordId} not found`});
+    }
+    const deletedTimestampRecord = targetRecord.timestampLabels.find(label => label.step === stepId);
+    if (!deletedTimestampRecord) {
+        return res.sendStatus(404).json({message: `Label with step ${stepId} not found in record with id ${recordId}`});
+    }
+    targetRecord.timestampLabels = targetRecord.timestampLabels.filter(label => label.step !== stepId);
+    res.send(deletedTimestampRecord);
 });

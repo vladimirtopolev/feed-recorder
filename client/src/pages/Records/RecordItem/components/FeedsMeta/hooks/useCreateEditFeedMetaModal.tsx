@@ -1,139 +1,33 @@
-import React, {ChangeEvent, FC, useEffect, useState} from 'react';
-import {ModalComponent} from '../../../../../../components/Modal/Modal';
+import React from 'react';
 import {FeedMeta} from '../../../../../../api/record';
-import {Box, Button, DialogActions, DialogContent, TextField} from '@material-ui/core';
-import {useAxiosFetch} from '../../../../../../hooks/useAxiosFetch';
+import {Box, TextField} from '@material-ui/core';
 import API from '../../../../../../api';
-import {AxiosPromise} from 'axios';
-
-type UseCreateEditFeedMetaModalResult = {
-    CreateEditModal: FC<CreateEditModalProps>;
-    createEditModalProps: CreateEditModalProps;
-    editItem: (item: FeedMeta) => void;
-    createItem: () => void;
-}
+import {useCreateEditItemModal, UseCreateEditItemModalResult} from '../../../../../../hooks/useCreateEditItemModal';
 
 
-type ModalState = {
-    status: ModalStatus,
-    item: FeedMeta | null
-}
-
-type CreateEditModalProps = {
-    onClose: () => void;
-    onEventAfterItemUpdated: () => void;
-    modalState: ModalState;
-    recordId: string;
-}
-
-enum ModalStatus {
-    CLOSED,
-    CREATE_ITEM,
-    EDIT_ITEM
-}
-
-const INIT_FEED_META: FeedMeta = {
-    id: '',
-    feedUrl: '',
-    fileName: ''
-};
-
-const CreateEditModal: FC<CreateEditModalProps> = ({onClose, modalState, recordId, onEventAfterItemUpdated}) => {
-    const [item, changeItem] = useState<FeedMeta>({...(modalState.item || INIT_FEED_META)});
-
-    useEffect(() => {
-        changeItem(() => ({...(modalState.item || INIT_FEED_META)}));
-    }, [modalState.item]);
-
-    const onChangeField = (field: string) => (e: ChangeEvent<HTMLInputElement>) => {
-        changeItem((prev) => ({...prev, [field]: e.target.value}));
-    };
-
-    const {handleRequest, responseState: {isLoading}} = useAxiosFetch<FeedMeta>();
-
-    const onCreateEditItem = () => {
-        const makeRequest: () => AxiosPromise<FeedMeta> =
-            modalState.status === ModalStatus.CREATE_ITEM
-                ? () => API.record.createFeedRecordItem(recordId, item)
-                : () => API.record.editFeedRecordItem(recordId, item.id, item);
-        handleRequest(makeRequest)
-            .then(() => {
-                onEventAfterItemUpdated();
-                onClose();
-            })
-    };
-
-    return (
-        <ModalComponent
-            isLoading={isLoading}
-            onClose={onClose}
-            title={modalState.status === ModalStatus.EDIT_ITEM ? 'Edit feed meta' : 'Create feed meta'}
-            open={modalState.status !== ModalStatus.CLOSED}
-        >
-            <DialogContent dividers>
-                <Box>
-                    <TextField
-                        label="FileName"
-                        value={item.fileName}
-                        onChange={onChangeField('fileName')}
-                    />
-                    <TextField
-                        label="FeedUrl"
-                        value={item.feedUrl}
-                        onChange={onChangeField('feedUrl')}
-                    />
-                </Box>
-            </DialogContent>
-
-            <DialogActions disableSpacing>
-                <Button autoFocus onClick={onClose}>
-                    {'CLOSE'}
-                </Button>
-                <Button variant="contained" color="primary" onClick={onCreateEditItem}>
-                    {'CREATE'}
-                </Button>
-            </DialogActions>
-        </ModalComponent>
-    );
-};
-
-
-export const useCreateEditFeedMetaModal = (recordId: string, onEventAfterItemUpdated: () => void): UseCreateEditFeedMetaModalResult => {
-
-    const [modalState, changeModalState] = useState<ModalState>({status: ModalStatus.CLOSED, item: null});
-
-    const createItem = () => {
-        changeModalState(() => ({
-            status: ModalStatus.CREATE_ITEM,
-            item: {...INIT_FEED_META}
-        }));
-    };
-
-    const editItem = (item: FeedMeta) => {
-        changeModalState(() => ({
-            status: ModalStatus.EDIT_ITEM,
-            item: {...item}
-        }));
-    };
-
-    const onClose = () => {
-        changeModalState(() => ({
-            status: ModalStatus.CLOSED,
-            item: null
-        }));
-    };
-
-    const createEditModalProps: CreateEditModalProps = {
-        onClose,
-        modalState,
-        recordId,
-        onEventAfterItemUpdated
-    };
-
-    return {
-        CreateEditModal,
-        createEditModalProps,
-        editItem,
-        createItem
-    };
+export const useCreateEditFeedMetaModal = (recordId: string, onEventAfterItemUpdated: () => void): UseCreateEditItemModalResult<FeedMeta> => {
+    return useCreateEditItemModal<FeedMeta>({
+        initialItem: {
+            id: '',
+            feedUrl: '',
+            fileName: ''
+        },
+        onEventAfterItemUpdated,
+        makeCreateItemRequest: (item) => API.record.createFeedRecordItem(recordId, item),
+        makeEditItemRequest: (item) => API.record.editFeedRecordItem(recordId, item.id, item),
+        CreateEditForm: ({item, changeField}) => (
+            <Box>
+                <TextField
+                    label="FileName"
+                    value={item.fileName}
+                    onChange={(e) => changeField('fileName', e.target.value)}
+                />
+                <TextField
+                    label="FeedUrl"
+                    value={item.feedUrl}
+                    onChange={(e) => changeField('feedUrl', e.target.value)}
+                />
+            </Box>
+        )
+    })
 };

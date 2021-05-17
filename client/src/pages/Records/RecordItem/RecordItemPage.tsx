@@ -28,6 +28,7 @@ export const RecordItemPage: FC = () => {
                     </Grid>
                     <Grid item xs={9}>
                         <SimulationState
+                            recordId={id}
                             state={response.simulationState}
                             step={response.simulationStep}
                             recordedSteps={response.recordSteps}
