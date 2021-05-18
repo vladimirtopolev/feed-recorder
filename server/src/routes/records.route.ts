@@ -49,6 +49,22 @@ recordRouter.get('/:recordId', async (req: Request<{ recordId: string }>, res) =
     res.send(record);
 });
 
+recordRouter.put('/:recordId', async (req, res) => {
+    const {recordId} = req.params;
+    const modifier = ['name', 'simulationStep'].reduce((memo, field)=>{
+        return {...memo, [field]: req.body[field]}
+    }, {});
+
+    const newRecord = await RecordModel.findByIdAndUpdate(
+        {_id: recordId},
+        {$set: modifier}
+    );
+    if (!newRecord) {
+        return res.status(404).json({message: `Record with id ${recordId} not found`});
+    }
+    res.send(newRecord);
+})
+
 recordRouter.delete('/:recordId', async (req: Request<{ recordId: string }>, res) => {
     const {recordId} = req.params;
     const deletedRecord = await RecordModel.findByIdAndDelete(recordId);

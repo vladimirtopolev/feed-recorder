@@ -66,7 +66,7 @@ export class RecordApi {
     };
 
     public editItem = (itemId: string, item: Partial<Record>) => {
-        return this.axios.post(`/api/${this.domainArea}/${itemId}`, item);
+        return this.axios.put(`/api/${this.domainArea}/${itemId}`, item);
     };
 
     public deleteItem = (itemId: string) => {

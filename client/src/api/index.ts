@@ -1,5 +1,5 @@
 import {RecordApi} from './record';
-
+import {SimulationRecordApi} from './simulationRecord';
 
 export const getBaseUrl = ():any =>{
     console.log(process.env.NODE_ENV)
@@ -15,5 +15,6 @@ export const delay = (data: any, delay = 1000) => {
 }
 
 export default {
-    record: new RecordApi()
+    record: new RecordApi(),
+    simulationRecord: new SimulationRecordApi()
 }
