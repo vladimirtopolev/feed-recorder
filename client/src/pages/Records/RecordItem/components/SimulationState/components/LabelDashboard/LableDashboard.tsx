@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {Box, Button} from '@material-ui/core';
 import {TimestampLabel} from '../../../../../../../api/record';
 import {useStyles} from './LabelDashboard.styles';
@@ -11,7 +11,7 @@ type LabelDashboardProps = {
     setLabels: (labels: TimestampLabel[]) => void;
     recordId: string
 }
-export const LabelDashboard: FC<LabelDashboardProps> = ({step, labels, recordId, setLabels}) => {
+const LabelDashboardComponent: FC<LabelDashboardProps> = ({step, labels, recordId, setLabels}) => {
     const classes = useStyles();
 
     const [label, setLabel] = useState<TimestampLabel | undefined>();
@@ -49,3 +49,5 @@ export const LabelDashboard: FC<LabelDashboardProps> = ({step, labels, recordId,
         </Box>
     );
 };
+
+export const LabelDashboard = React.memo(LabelDashboardComponent)

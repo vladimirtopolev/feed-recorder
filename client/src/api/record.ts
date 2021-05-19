@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosPromise} from 'axios';
-import {delay, getBaseUrl} from './index';
+import {getBaseUrl} from './index';
 import {PaginationOptions, PaginationResponse} from '../types';
 
 export enum RECORD_STATE {
@@ -65,7 +65,7 @@ export class RecordApi {
         return this.axios.post(`/api/${this.domainArea}`, item);
     };
 
-    public editItem = (itemId: string, item: Partial<Record>) => {
+    public editItem = (itemId: string, item: Partial<Record>): AxiosPromise<Record> => {
         return this.axios.put(`/api/${this.domainArea}/${itemId}`, item);
     };
 

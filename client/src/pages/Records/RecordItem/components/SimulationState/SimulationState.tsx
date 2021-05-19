@@ -1,4 +1,4 @@
-import {FC, useState} from 'react';
+import {FC, useCallback, useEffect, useState} from 'react';
 import {SIMULATION_STATE, TimestampLabel} from './../../../../../api/record';
 import API from './../../../../../api';
 import {useStyles} from './SimulationState.styles';
@@ -13,40 +13,60 @@ import {SimulationState} from '../../../../../api/simulationRecord';
 
 type SimulationStateCellProps = {
     recordId: string,
-    state: SIMULATION_STATE,
-    step: number,
     recordedSteps: number,
     labels: TimestampLabel[],
-    changeSimulationStep: (step: number) => void,
-    changeSimulationState: (state: SimulationState) => void
 };
 
-export const SimulationStateComponent: FC<SimulationStateCellProps> = ({step, state, recordedSteps, labels: serverLabels, recordId, changeSimulationStep, changeSimulationState}) => {
+export const SimulationStateComponent: FC<SimulationStateCellProps> = ({recordedSteps, labels: serverLabels, recordId}) => {
     const classes = useStyles();
 
     const [labels, setLabels] = useState<TimestampLabel[]>(serverLabels);
     const [selectingStep, setSelectingStep] = useState(0);
+    const [simulationState, setSimulationState] = useState<SimulationState>();
 
     const changeSelectingStep = (step: number) => {
         setSelectingStep(step);
     };
 
-    console.log('==><', state)
+    const changeSimulationStep = useCallback((step: number) => {
+        API.record.editItem(recordId, {simulationStep: step})
+            .then(() => setSimulationState((prev) => !prev ? prev : {...prev, simulationStep: step}));
+    }, [recordId]);
+
+
+    const requestSimulationStep = () => {
+        API.simulationRecord.getSimulationRecord(recordId)
+            .then((res) => {
+                setSimulationState(() => res.data);
+            });
+    };
+
+    useEffect(() => {
+        requestSimulationStep();
+        const interval = setInterval(requestSimulationStep, 1000);
+        return () => clearInterval(interval);
+    }, [recordId]);
+
+    const changeSimulationState = useCallback<(state: SimulationState) => void>((state) => {
+        setSimulationState(() => state);
+    }, []);
 
     const onPlay = () => {
         API.simulationRecord.playRecord(recordId)
-            .then((res) => changeSimulationState(res.data))
-    }
+            .then((res) => changeSimulationState(res.data));
+    };
 
     const onPause = () => {
         API.simulationRecord.pauseRecord(recordId)
-            .then((res) => changeSimulationState(res.data))
-    }
+            .then((res) => changeSimulationState(res.data));
+    };
 
     const onStop = () => {
         API.simulationRecord.stopRecord(recordId)
-            .then((res) => changeSimulationState(res.data))
-    }
+            .then((res) => changeSimulationState(res.data));
+    };
+    const step = simulationState?.simulationStep || 0;
+    const state = simulationState?.simulationState;
 
     return (
         <Box className={classes.container}>

@@ -1,4 +1,4 @@
-import {FC, useEffect, useRef, useState} from 'react';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {TimestampLabel} from '../../../../../../../api/record';
 import {useStyles} from './ProgressLabels.styles';
 import {Tooltip} from '@material-ui/core';
@@ -8,7 +8,7 @@ type ProgressLabelsProps = {
     labels: TimestampLabel[],
     changeSimulationStep: (step: number) => void;
 };
-export const ProgressLabels: FC<ProgressLabelsProps> = ({ labels, recordedSteps, changeSimulationStep}) => {
+const ProgressLabelsComponent: FC<ProgressLabelsProps> = ({ labels, recordedSteps, changeSimulationStep}) => {
     const classes = useStyles();
     const containerRef = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(0);
@@ -37,3 +37,5 @@ export const ProgressLabels: FC<ProgressLabelsProps> = ({ labels, recordedSteps,
         </div>
     );
 };
+
+export const ProgressLabels = React.memo(ProgressLabelsComponent)

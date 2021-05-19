@@ -15,6 +15,8 @@ type ModalState<T> = {
     item: T | null | undefined
 }
 
+export type CreateEditFormProps<T> = {item: T, changeField: (field: string, value: any) => void};
+
 type CreateEditModalProps<T> = {
     initialItem: T,
     onClose: () => void;
@@ -22,7 +24,7 @@ type CreateEditModalProps<T> = {
     modalState: ModalState<T>;
     makeCreateItemRequest: (item: T) => AxiosPromise<T>,
     makeEditItemRequest: (item: T) => AxiosPromise<T>,
-    CreateEditForm: FC<{item: T, changeField: (field: string, value: any) => void}>
+    CreateEditForm: FC<CreateEditFormProps<T>>
 }
 
 
@@ -31,7 +33,7 @@ type UseCreateEditItemModalProps<T> = {
     onEventAfterItemUpdated: (item: T) => void;
     makeCreateItemRequest: (item: T) => AxiosPromise<T>,
     makeEditItemRequest: (item: T) => AxiosPromise<T>,
-    CreateEditForm: FC<{item: T, changeField: (field: string, value: any) => void}>
+    CreateEditForm: FC<CreateEditFormProps<T>>
 }
 
 export type UseCreateEditItemModalResult<T> = {
@@ -64,8 +66,9 @@ const CreateEditItemModal = function <T>({modalState, initialItem, makeEditItemR
             .then((item) => {
                 onEventAfterItemUpdated(item);
                 onClose();
-            })
+            });
     };
+
 
     return (
         <ModalComponent
@@ -83,7 +86,7 @@ const CreateEditItemModal = function <T>({modalState, initialItem, makeEditItemR
                     {'CLOSE'}
                 </Button>
                 <Button variant="contained" color="primary" onClick={onCreateEditItem}>
-                    {'CREATE'}
+                    {modalState.status === ModalStatus.EDIT_ITEM ? 'Edit' : 'Create'}
                 </Button>
             </DialogActions>
         </ModalComponent>
