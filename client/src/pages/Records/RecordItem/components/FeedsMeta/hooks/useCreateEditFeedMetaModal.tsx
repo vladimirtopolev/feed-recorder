@@ -8,8 +8,6 @@ import {
     UseCreateEditItemModalResult
 } from '../../../../../../hooks/useCreateEditItemModal';
 
-
-
 const CreateEditForm: FC<CreateEditFormProps<FeedMeta>> = React.memo(({item, changeField}) => {
     return (
         <Box>

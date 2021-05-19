@@ -30,7 +30,7 @@ export const RecordItemPage: FC = () => {
             <Container>
                 <Grid container spacing={2}>
                     <Grid item xs={3}>
-                        <RecordState state={record.recordState} steps={record.recordSteps}/>
+                        <RecordState recordId={id}/>
                     </Grid>
                     <Grid item xs={9}>
                         <SimulationStateComponent
