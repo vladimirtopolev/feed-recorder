@@ -9,19 +9,25 @@ import {
     TablePagination,
     TableRow
 } from '@material-ui/core';
-import {Record} from '../../../../../api/record';
+import {Record} from '@api/record';
 import {useStyles} from './RecordsTable.styles';
-
+import {useDeleteRecordModal} from '../../hooks/useDeleteRecordModal';
 import {Edit as EditIcon, Delete as DeleteIcon} from '@material-ui/icons';
 import {RecordStateCell} from './components/RecordStateCell/RecordStateCell';
 import {SimulationStateCell} from './components/SimulationStateCell/SimulationStateCell';
-import {UsePaginationReturn} from '../../../../../hooks/usePagination';
 import {NavLink} from 'react-router-dom';
-import {useDeleteRecordModal} from '../../hooks/useDeleteRecordModal';
 
-type RecordsTableProps = UsePaginationReturn<Record>
+type RecordsTableProps = {
+    items: Record[],
+    count: number,
+    limit: number,
+    offset: number,
+    changePage: (page: number) => void,
+    changeLimit: (limit: number) => void,
+    refreshPage: () => void
+}
 
-export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, changeItemsPerPage, offset, changePage, refreshPage}) => {
+export const RecordsTable: FC<RecordsTableProps> = ({items, count, limit, offset, changePage, changeLimit, refreshPage}) => {
     const classes = useStyles();
     const {DeleteItemModal, deleteItemModalProps, deleteItem} = useDeleteRecordModal(refreshPage);
 
@@ -68,14 +74,15 @@ export const RecordsTable: FC<RecordsTableProps> = ({items, itemsCount, limit, c
             </TableContainer>
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
-                count={itemsCount}
+                className={classes.tablePagination}
+                count={count}
                 rowsPerPage={limit}
                 page={Math.floor(offset / limit)}
                 onChangePage={(_, page) => {
                     changePage(page);
                 }}
                 onChangeRowsPerPage={(ev) => {
-                    changeItemsPerPage(+ev.target.value);
+                    changeLimit(+ev.target.value);
                 }}
             />
             <DeleteItemModal {...deleteItemModalProps}/>

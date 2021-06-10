@@ -60,6 +60,7 @@ const RecordSchema = new Schema({
     created: { type: Date, default: Date.now }
 });
 
-type RecordDocument = Record & Document;
+export type RecordDocument = Record & Document;
+export type FeedMetaDocument = FeedMeta & Document;
 
 export const RecordModel = model<RecordDocument>('Record', RecordSchema);

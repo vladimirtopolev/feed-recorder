@@ -1,6 +1,7 @@
 // In this file you can configure migrate-mongo
-const devConfig = require('./src/config/production.json');
+const devConfig = require(`./src/config/${process.env.NODE_ENV}.json`);
 
+console.log(process.env.NODE_ENV)
 const config = {
   mongodb: {
     url: devConfig.CONNECTIONS.MONGODB.URL,

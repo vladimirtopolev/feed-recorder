@@ -24,8 +24,16 @@ export const useStyles = makeStyles((theme) =>
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-
-
+        },
+        loaderBackground: {
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            filter: 'blur(1px)',
+            background: '#ffffff',
+            opacity: 0.5
         }
     })
 );

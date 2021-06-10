@@ -1,7 +1,6 @@
 import {ChildProcess, fork} from 'child_process';
 import {join, resolve} from 'path';
-import {RecordModel} from '../../models/record.model';
-import {SIMULATION_STATE} from '../../entities/records';
+import {RecordModel, SIMULATION_STATE} from '../../models/record.model';
 
 class Recorder {
     private childProcessPool: { [key: string]: ChildProcess } = {};

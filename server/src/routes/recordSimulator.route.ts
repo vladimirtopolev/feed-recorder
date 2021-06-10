@@ -1,6 +1,5 @@
 import express, {Request} from 'express';
-import {RecordModel} from '../models/record.model';
-import {SIMULATION_STATE} from '../entities/records';
+import {RecordModel, SIMULATION_STATE} from '../models/record.model';
 import {simulator} from '../controllers/simulator/Simulator';
 export const recordSimulatorRouter = express.Router();
 

@@ -1,6 +1,6 @@
 import axios, {AxiosInstance, AxiosPromise} from 'axios';
 import {getBaseUrl} from './index';
-import {PaginationOptions, PaginationResponse} from '../types';
+import {PaginationOptions, PaginationResponse} from '@declarations/index';
 
 export enum RECORD_STATE {
     IN_PROGRESS = 'IN_PROGRESS',
@@ -26,7 +26,12 @@ export type TimestampLabel = {
     label: string
 }
 
-export type Record = {
+export type CreateRecord = {
+    name: string,
+    feedsMeta: Omit<FeedMeta, 'id'>[],
+}
+
+export type Record = CreateRecord & {
     id: string,
     name: string,
     recordState: RECORD_STATE,
@@ -61,7 +66,7 @@ export class RecordApi {
         return this.axios.get(`/api/${this.domainArea}/${itemId}`);
     };
 
-    public createItem = (item: Partial<Record>): AxiosPromise<Record> => {
+    public createItem = (item: CreateRecord): AxiosPromise<Record> => {
         return this.axios.post(`/api/${this.domainArea}`, item);
     };
 

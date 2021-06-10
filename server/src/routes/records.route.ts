@@ -1,9 +1,6 @@
 import express, {Request} from 'express';
-import entities from '../entities';
-import {Record, FeedMeta, RECORD_STATE, SIMULATION_STATE} from '../entities/records';
 import {PaginationRequest} from '../types';
-import faker from 'faker';
-import {RecordModel} from '../models/record.model';
+import {RecordModel, Record, RECORD_STATE, SIMULATION_STATE, FeedMeta} from '../models/record.model';
 
 export const recordRouter = express.Router();
 
@@ -21,7 +18,7 @@ recordRouter.get('/', async (req: PaginationRequest, res) => {
     const {offset, limit} = req.query;
     const [count, items] = await Promise.all([
         RecordModel.countDocuments(),
-        RecordModel.find({}).skip(Number(offset)).limit(Number(limit))
+        RecordModel.find({}).skip(Number(offset)).limit(Number(limit)).sort({_id: -1})
     ]);
     res.send({
         items: items,
@@ -29,15 +26,15 @@ recordRouter.get('/', async (req: PaginationRequest, res) => {
     });
 });
 
-recordRouter.post('/', (req, res) => {
+
+recordRouter.post('/', async (req, res) => {
     const newItem: Record = {
         ...INIT_RECORD,
         ...req.body,
-        id: faker.datatype.uuid(),
         created: new Date()
     };
-    entities.RECORDS = entities.RECORDS.concat(newItem);
-    res.json(newItem);
+    const createdItem = await RecordModel.create(newItem);
+    res.send(createdItem);
 });
 
 recordRouter.get('/:recordId', async (req: Request<{ recordId: string }>, res) => {
@@ -51,9 +48,10 @@ recordRouter.get('/:recordId', async (req: Request<{ recordId: string }>, res) =
 
 recordRouter.put('/:recordId', async (req, res) => {
     const {recordId} = req.params;
-    const modifier = ['name', 'simulationStep'].reduce((memo, field)=>{
-        return {...memo, [field]: req.body[field]}
+    const modifier = ['name', 'simulationStep'].reduce((memo, field) => {
+        return req.body[field] ? {...memo, [field]: req.body[field]} : memo;
     }, {});
+    console.log(modifier);
 
     const newRecord = await RecordModel.findByIdAndUpdate(
         {_id: recordId},
@@ -63,7 +61,7 @@ recordRouter.put('/:recordId', async (req, res) => {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
     res.send(newRecord);
-})
+});
 
 recordRouter.delete('/:recordId', async (req: Request<{ recordId: string }>, res) => {
     const {recordId} = req.params;
@@ -158,7 +156,7 @@ recordRouter.put('/:recordId/timestampLabels/:stepId', async (req, res) => {
         {_id: recordId, 'timestampLabels.step': step},
         {$set: {'timestampLabels.$.label': req.body.label}}
     );
-    console.log(newRecord)
+    console.log(newRecord);
     if (!newRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});
     }
@@ -168,7 +166,7 @@ recordRouter.put('/:recordId/timestampLabels/:stepId', async (req, res) => {
 
 recordRouter.delete('/:recordId/timestampLabels/:stepId', async (req, res) => {
     const {recordId, stepId} = req.params;
-    const step = Number(stepId)
+    const step = Number(stepId);
     const newRecord = await RecordModel.findByIdAndUpdate(recordId, {$pull: {timestampLabels: {step}}});
     if (!newRecord) {
         return res.status(404).json({message: `Record with id ${recordId} not found`});

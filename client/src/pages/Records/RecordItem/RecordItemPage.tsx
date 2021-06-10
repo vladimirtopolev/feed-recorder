@@ -1,32 +1,28 @@
-import {FC, useEffect, useState} from 'react';
+import {FC, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
-import {useAxiosFetch} from '../../../hooks/useAxiosFetch';
-import {Record} from '../../../api/record';
 import API from '../../../api';
-import {ContentContainer} from '../../../components/ContentContainer/ContentContainer';
+import {ContentContainer} from '@components/ContentContainer/ContentContainer';
 import {PageHeader} from './components/PageHeader/PageHeader';
 import {Container, Grid, Box} from '@material-ui/core';
 import {RecordState} from './components/RecordState/RecordState';
 import {SimulationStateComponent} from './components/SimulationState/SimulationState';
 import {FeedsMeta} from './components/FeedsMeta/FeedsMeta';
+import { useSelector, useDispatch } from 'react-redux'
+import {recordSelector} from '@store/index';
+import {recordRequestAction} from '@store/reducers/record';
 
 export const RecordItemPage: FC = () => {
     const {id} = useParams<{ id: string }>();
-    const {handleRequest, responseState} = useAxiosFetch<Record>();
-    const {isLoading, error, response} = responseState;
 
-    const [record, setRecord] = useState<Record | null>(null);
+    const {isLoading, error, data: record} = useSelector(recordSelector);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        handleRequest(() => API.record.getItem(id))
-            .then(record => {
-                setRecord(record);
-            });
+        dispatch(recordRequestAction(() => API.record.getItem(id)))
     }, [id]);
 
-
-    return <ContentContainer isLoading={isLoading} header={<PageHeader title={responseState.response?.name}/>}>
-        {!isLoading && !error && response && record && (
+    return <ContentContainer isLoading={isLoading} header={<PageHeader title={record?.name}/>}>
+        {!isLoading && !error && record && (
             <Container>
                 <Grid container spacing={2}>
                     <Grid item xs={3}>

@@ -1,7 +1,7 @@
 import React from 'react';
-import {Record} from '../../../../api/record';
-import API from '../../../../api';
-import {useDeleteItemModal, UseDeleteItemModalResult} from '../../../../hooks/useDeleteItemModal';
+import {Record} from '@api/record';
+import API from '@api/index';
+import {useDeleteItemModal, UseDeleteItemModalResult} from '@hooks/useDeleteItemModal';
 
 export const useDeleteRecordModal = (onEventAfterItemDeleted: () => void): UseDeleteItemModalResult<Record> => {
     return useDeleteItemModal<Record>({

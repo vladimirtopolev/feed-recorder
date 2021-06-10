@@ -19,6 +19,7 @@ export const ContentContainer: FC<ContentContainerProps> = ({header, isLoading, 
                 </>
                 {isLoading && (
                     <Box className={classes.loaderContainer}>
+                        <Box className={classes.loaderBackground}/>
                         <CircularProgress />
                     </Box>
                 )}

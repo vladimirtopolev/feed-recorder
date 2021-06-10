@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server:start": "nodemon",
-    "server:build": "tsc"
+    "server:build": "tsc",
+    "migrate:dev": "NODE_ENV=development migrate-mongo up",
+    "migrate:prod": "NODE_ENV=production migrate-mongo up"
   },
   "engines": {
     "node": "10.x"

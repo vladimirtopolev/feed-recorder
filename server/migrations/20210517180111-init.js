@@ -44,6 +44,7 @@ const RECORDS = Array.from({ length: RECORDS_COUNT })
 module.exports = {
     async up(db, client) {
         await db.collection('records').insertMany(RECORDS);
+        console.log('Record created');
     },
 
     async down(db, client) {

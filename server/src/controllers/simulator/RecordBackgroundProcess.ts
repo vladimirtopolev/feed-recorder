@@ -1,6 +1,5 @@
 import mongoConnection from '../../connections/mongo-connection.provider';
-import {RecordModel} from '../../models/record.model';
-import {SIMULATION_STATE} from '../../entities/records';
+import {RecordModel, SIMULATION_STATE} from '../../models/record.model';
 
 const INTERVAL = 1000;
 

@@ -15,6 +15,9 @@ export const useStyles = makeStyles((theme) =>
         },
         tableBodyCellActions: {
             width: 130
+        },
+        tablePagination:{
+            border: 'none'
         }
     })
 );
