@@ -78,11 +78,10 @@ export const CreateRecordModal: FC<CreateRecordModalProps> = ({isOpen, setModalS
             handleRequest(() => API.record.createItem(record));
         } catch (e) {
 
-        } finally {
-            actionAfterCreation && actionAfterCreation();
-            onClose();
         }
-
+        console.log(!!actionAfterCreation);
+        actionAfterCreation && actionAfterCreation();
+        onClose();
     };
 
     const Content = StepContent[step];

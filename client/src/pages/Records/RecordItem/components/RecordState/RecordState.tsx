@@ -1,10 +1,12 @@
 import {FC, useEffect, useState} from 'react';
-import {Box, Button, Typography} from '@material-ui/core';
+import {Box, Button} from '@material-ui/core';
 import {useStyles} from './RecordState.styles';
-import {RECORD_STATE} from '../../../../../api/record';
+import {RECORD_STATE} from '@api/record';
 import {PlayArrow as PlayArrowIcon, Stop as StopIcon} from '@material-ui/icons';
-import {RecordingState} from '../../../../../api/recordingRecord';
-import API from '../../../../../api';
+import {RecordingState} from '@api/recordingRecord';
+import API from '@api/index';
+import {SectionBlock} from '@components/SectionBlock/SectionBlock';
+import {CurrentStepTitle} from '@components/Record/CurrentStepTitle/CurrentStepTitle';
 
 type RecordStateProps = {
     recordId: string
@@ -39,8 +41,7 @@ export const RecordState: FC<RecordStateProps> = ({recordId}) => {
     const steps = recordingState?.recordSteps || 0;
 
     return (
-        <Box className={classes.wrapper}>
-            <Typography>Recorded State</Typography>
+        <SectionBlock title="Recorded State">
             <Box className={classes.buttons}>
                 <Button
                     size="large"
@@ -60,8 +61,8 @@ export const RecordState: FC<RecordStateProps> = ({recordId}) => {
                 </Button>
             </Box>
             <Box className={classes.description}>
-                <span>{steps} Recorded Steps</span>
+                <CurrentStepTitle step={steps} description="recorded steps"/>
             </Box>
-        </Box>
+        </SectionBlock>
     );
 };

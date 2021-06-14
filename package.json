@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@material-ui/lab": "^4.0.0-alpha.58",
+    "aws-sdk": "^2.925.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "config": "^3.3.6",

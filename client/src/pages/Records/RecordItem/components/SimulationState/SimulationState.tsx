@@ -1,15 +1,16 @@
 import {FC, useCallback, useEffect, useState} from 'react';
-import {SIMULATION_STATE, TimestampLabel} from './../../../../../api/record';
-import API from './../../../../../api';
+import {TimestampLabel} from '@api/record';
+import API from '@api/index';
 import {useStyles} from './SimulationState.styles';
-import {Box, Button, Typography} from '@material-ui/core';
-import {Pause as PauseIcon, PlayArrow as PlayArrowIcon, Stop as StopIcon} from '@material-ui/icons';
+import {Box} from '@material-ui/core';
 import {Progress} from './components/Progress/Progress';
 import {ProgressLabels} from './components/ProgressLabels/ProgressLabels';
 import {CurrentTimestamp} from './components/CurrentTimestamp/CurrentTimestamp';
-import {CurrentStepTitle} from './components/CurrentStepTitle/CurrentStepTitle';
+import {CurrentStepTitle} from '@components/Record/CurrentStepTitle/CurrentStepTitle';
 import {LabelDashboard} from './components/LabelDashboard/LableDashboard';
-import {SimulationState} from '../../../../../api/simulationRecord';
+import {SimulationState} from '@api/simulationRecord';
+import {SectionBlock} from '@components/SectionBlock/SectionBlock';
+import {SimulationControlButtons} from '@components/Record/SimulationControlButtons/SimulationControlButtons';
 
 type SimulationStateCellProps = {
     recordId: string,
@@ -69,58 +70,33 @@ export const SimulationStateComponent: FC<SimulationStateCellProps> = ({recorded
     const state = simulationState?.simulationState;
 
     return (
-        <Box className={classes.container}>
-            <Box className={classes.titleContainer}>
-                <Typography className={classes.title}>Simulation State</Typography>
+        <SectionBlock title="Simulation State">
+            <SimulationControlButtons
+              state={state}
+              onPlay={onPlay}
+              onPause={onPause}
+              onStop={onStop}
+            />
+            <CurrentStepTitle step={step}/>
+            <LabelDashboard step={step} labels={labels} recordId={recordId} setLabels={setLabels}/>
+            <Box className={classes.progress}>
+                <CurrentTimestamp
+                    selectingStep={selectingStep}
+                    recordedSteps={recordedSteps}
+                />
+                <Progress
+                    recordedSteps={recordedSteps}
+                    step={step}
+                    selectingStep={selectingStep}
+                    changeSelectingStep={changeSelectingStep}
+                    changeSimulationStep={changeSimulationStep}
+                />
+                <ProgressLabels
+                    recordedSteps={recordedSteps}
+                    labels={labels}
+                    changeSimulationStep={changeSimulationStep}
+                />
             </Box>
-            <Box className={classes.content}>
-                <Box className={classes.buttons}>
-                    <Button
-                        size="large"
-                        className={classes.playButton}
-                        disabled={state === SIMULATION_STATE.IN_PROGRESS}
-                        onClick={onPlay}
-                    >
-                        <PlayArrowIcon fontSize="large"/>
-                    </Button>
-                    <Button
-                        size="large"
-                        className={classes.pauseButton}
-                        disabled={state !== SIMULATION_STATE.IN_PROGRESS}
-                        onClick={onPause}
-                    >
-                        <PauseIcon fontSize="large"/>
-                    </Button>
-                    <Button
-                        size="large"
-                        className={classes.stopButton}
-                        disabled={state === SIMULATION_STATE.NOT_STARTED}
-                        onClick={onStop}
-                    >
-                        <StopIcon/>
-                    </Button>
-                </Box>
-                <CurrentStepTitle step={step}/>
-                <LabelDashboard step={step} labels={labels} recordId={recordId} setLabels={setLabels}/>
-                <Box className={classes.progress}>
-                    <CurrentTimestamp
-                        selectingStep={selectingStep}
-                        recordedSteps={recordedSteps}
-                    />
-                    <Progress
-                        recordedSteps={recordedSteps}
-                        step={step}
-                        selectingStep={selectingStep}
-                        changeSelectingStep={changeSelectingStep}
-                        changeSimulationStep={changeSimulationStep}
-                    />
-                    <ProgressLabels
-                        recordedSteps={recordedSteps}
-                        labels={labels}
-                        changeSimulationStep={changeSimulationStep}
-                    />
-                </Box>
-            </Box>
-        </Box>
+        </SectionBlock>
     );
 };

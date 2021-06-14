@@ -60,7 +60,7 @@ export const TitleStep: FC = () => {
                         color="primary"
                         variant="contained"
                         onClick={() => {
-                            createRecord(record);
+                            createRecord({...record});
                         }}
                     >
                         Create

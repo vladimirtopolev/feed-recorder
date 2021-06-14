@@ -1,7 +1,7 @@
 import mongoConnection from '../../connections/mongo-connection.provider';
-import {FeedMeta, FeedMetaDocument, RECORD_STATE, RecordModel} from '../../models/record.model';
+import {FeedMeta, RECORD_STATE, RecordModel} from '../../models/record.model';
 import {recordFileSystemConnector} from '../../service/RecordFileSystemConnector';
-
+import {recordS3Connector} from '../../service/RecordS3Connector';
 const INTERVAL = 10_000;
 
 mongoConnection.connect()
@@ -27,7 +27,7 @@ const simulateTick = async () => {
     const feedsMeta: FeedMeta[] = newRecord.feedsMeta;
 
     const requests = feedsMeta.map(feedMeta => {
-        return recordFileSystemConnector.recordUrl(newRecord._id, feedMeta, newRecord.recordSteps)
+        return recordS3Connector.recordUrl(newRecord._id, feedMeta, newRecord.recordSteps)
     });
     await Promise.allSettled(requests);
 

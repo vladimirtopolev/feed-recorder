@@ -3,6 +3,7 @@ import path from 'path';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import mongoConnection from './connections/mongo-connection.provider';
+import s3Connection from './connections/s3-connection.provider';
 
 import {patternRouter} from './routes/pattern.route';
 import {recordRouter} from './routes/records.route';
@@ -33,7 +34,12 @@ app.get('*', (req, res) => {
     res.sendFile(pathFile);
 });
 
-mongoConnection.connect()
+Promise.all(
+    [
+        mongoConnection.connect(),
+        s3Connection.connect()
+    ]
+)
     .then(() => {
         app.listen(PORT, () => {
             console.log(`server is listening on ${PORT}`);

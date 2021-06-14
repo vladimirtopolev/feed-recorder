@@ -1,5 +1,5 @@
 import {FC, useEffect, useState} from 'react';
-import {FeedMeta} from '../../../../../api/record';
+import {FeedMeta} from '@api/record';
 import {
     Button,
     Table,
@@ -14,8 +14,8 @@ import {
 import {Delete as DeleteIcon, Edit as EditIcon} from '@material-ui/icons';
 import {useStyles} from './FeedsMeta.styles';
 import {useCreateEditFeedMetaModal} from './hooks/useCreateEditFeedMetaModal';
-import {useAxiosFetch} from '../../../../../hooks/useAxiosFetch';
-import API from '../../../../../api';
+import {useAxiosFetch} from '@hooks/useAxiosFetch';
+import API from '@api/index';
 import {useDeleteFeedMetaModal} from './hooks/useDeleteFeedMetaModal';
 
 type FeedsMetaProps = {
